@@ -1,0 +1,129 @@
+import os
+import pandas as pd
+import numpy as np
+from nltk.corpus import stopwords
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk import WordNetLemmatizer
+import speech_recognition as sr
+os.chdir("C:\\Users\\kumar\\Desktop\\voice_sih\\")
+
+dic={"viral fever":["chills","sweating","dehydration","headache","muscle aches and pains"," a feeling of weakness" , "loss of appetite"],
+    "fever":["throat swelling","severe headache","listlessness"],
+    "diarrhoea":["gas","bloating","constipation","abdominal pain"],
+    "throat infection":["painful swallowing","fever","headache"],
+    "tonsils":["chills","fever","pain in ears","congestionor"],
+    "gas":["burps","pain or cramps in abdomen","fullness of pressure in abdomen"],
+   "skin allergy":["itching","hives","rash","watery eyes","scratchy throat"],
+    "dehydration":["increases thirst","dry mouth","tired or sleepy","headache"],
+   "sun stroke": ["headache","dizziness","nausea and vomiting","shallow breathing"],
+    "migraine":["throbbing pain","sensitivity to light and sound","nausea and vomitting"]}
+
+disease_list=["viral fever" ,
+    "fever",
+    "diarrhoea",
+    "throat infection",
+    "tonsils",
+    "gas",
+   "skin allergy",
+    "dehydration",
+   "sun stroke",
+    "migraine"]
+
+disease_symptoms=[["chillls","sweating","dehydration","headache","muscle aches and pains"," a feeling of weakness" , "loss of appetite"],
+    ["throat swelling","severe headache","listlessness"],
+    ["gas","bloating","constipation","abdominal pain"],
+    ["painful swallowing","fever","headache"],
+    ["chills","fever","pain in ears","congestionor"],
+    ["burps","pain or cramps in abdomen","fullness of pressure in abdomen"],
+   ["itching","hives","rash","watery eyes","scratchy throat"],
+    ["increases thirst","dry mouth","tired or sleepy","headache"],
+    ["headache","dizziness","nausea and vomiting","shallow breathing"],
+   ["throbbing pain","sensitivity to light and sound","nausea and vomitting"]]
+disease_precautions=[["Sleep is a good remedy","drink more water","A nasal decongestant","Take Advil and Ibuprofen "],
+["Drink plenty water","Take acetaminophen or ibuprofen"],
+["Eat bland","easily digested food like banana and rice"],
+["sleep well","gargle with salt water","drink fluids"],
+["warm tea with honey","don’t eat brinjal and tomato","humidifiers"],
+["eat small but frequent","quit smoking","avoid skipping meals"],
+["use lukewarm water","don’t use chemicals","be away from pets","cosmetics and their ingredients is suitable to your skin or not"],
+["drink plenty water and take juices and liquids","avoid coffee"]    ,
+["wear lightweight","light colored","drink water","est fruits and vegetables"],
+["avoid loud noises and bright lights","be aware of harmonal changes"]
+
+]
+
+
+r = sr.Recognizer()
+filename = input("set a file name ")
+complete_name = "C:\\Users\\kumar\\Desktop\\voice_sih\\"+filename+".txt"
+
+with sr.Microphone() as source:
+    print("speak something")
+    audio = r.listen(source)
+
+try:
+
+    print("system predicts:"+r.recognize_google(audio))
+    stringtosave = r.recognize_google(audio)
+    myFile = open(complete_name,'w')
+    myFile.write(stringtosave)
+    myFile.write("\n")
+    myFile.write("\n--------------------------------------------------------------------------------------------------------\n")
+    myFile.close()
+except Exception:
+    print("something is wrong")
+
+df = open(complete_name,"r")
+data=df.read()
+
+wnl=WordNetLemmatizer()
+
+words=word_tokenize(data)
+words=[word.lower() for word in words]#for converting into lower cases
+words = [wnl.lemmatize(word) for word in words if word not in set(stopwords.words("english"))]
+for wo in words:
+    if wo in disease_list:
+        ind=disease_list.index(wo)
+        print("The paitent has ", disease_list[ind])
+        print("the symptoms are",disease_symptoms[ind])
+
+        
+        myFile = open(complete_name,'a')
+myFile.write("Disease     : ")
+myFile.write(disease_list[ind])
+
+myFile.write("\n------------------------------------------------------------------------------------------------------------\n")
+myFile.write("Symptoms    : \n")
+for i in range(len(disease_symptoms[ind])):
+    myFile.write("             * ")
+    myFile.write(disease_symptoms[ind][i])
+    myFile.write("\n")
+myFile.write("\n------------------------------------------------------------------------------------------------------------\n")    
+myFile.write("Precautions : \n")
+for i in range(len(disease_precautions[ind])):
+    myFile.write("             * ")
+    myFile.write(disease_precautions[ind][i])
+    myFile.write("\n")
+myFile.write("\n------------------------------------------------------------------------------------------------------------\n") 
+myFile.close()
+os.startfile(complete_name)
+
+
+
+
+
+
+****this is for probability ******
+new = ["chills","sweating","dehydration","fever","pain in ears"]
+prob=[0,0,0,0,0,0,0,0,0,0]
+probs=[0,0,0,0,0,0,0,0,0,0]
+for i in range(len(disease_symptoms)):
+    for j in range(len(disease_symptoms[i])):
+        for k in new:
+            if k==disease_symptoms[i][j]:
+                prob[i]=prob[i]+1
+    probs[i]=prob[i]/len(disease_symptoms[i])
+    print(probs[i])
+            
+
+

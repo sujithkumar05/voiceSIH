@@ -1,0 +1,7 @@
+key value pairs 
+probability of keywords to find disease
+retriving found key disease in dictionary 
+later generating pdf of default format
+to predict disease  by using symptoms said by patient and match with the doctor
+predict if whether he is having two or more disease also .
+similar symptoms should be removed .
